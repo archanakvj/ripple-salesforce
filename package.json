@@ -1,0 +1,19 @@
+{
+  "name": "my_ripple_experiment",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "main": "server.js",
+  "//": "Change the license to something appropriate. You may want to use 'UNLICENSED' if you are just starting out.",
+  "dependencies": {
+    "express": "^4.17.1",
+    "ripple-lib": "*",
+    "router": "^1.3.3"
+  },
+  "devDependencies": {
+    "eslint": "*"
+  }
+}
