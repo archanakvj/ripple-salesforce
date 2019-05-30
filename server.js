@@ -2,12 +2,25 @@ var express = require("express");
 var app = express();
 var bodyParser = require('body-parser');
 app.use(express.static('public'));
-app.use(bodyParser.json());
+
 var RippleAPI = require('ripple-lib').RippleAPI
 var api       = new RippleAPI({ server: 'wss://s.altnet.rippletest.net:51233' }) // Public rippled server
-var myAddress = 'rhkvquYzzvzYhhvBthdXAx4mtGKnwiukz1'
-var mySecret  = 'sn5AhH5V3zJ1rpmZu9RXU6xMc96sw'
-app.get('/transaction', function(req, res) {
+var myAddress;
+var mySecret;
+var destAddress;
+app.use(bodyParser.urlencoded({
+   extended: false
+}));
+
+app.use(bodyParser.json());
+
+app.post('/transaction', function(req, res) {
+
+        myAddress = req.body.fromAddress;
+        mySecret = req.body.mySecret;
+        destAddress=req.body.destAddress;
+
+
 api.on('error', function (errorCode, errorMessage) {
   console.log(errorCode + ': ' + errorMessage)
 })
@@ -24,7 +37,7 @@ api.on('connected', function () {
 
       console.log('getServerState', ss)
 
-      var _fee = (ss.validatedLedger.baseFeeXRP*1000*1000)+""
+      var _fee = (ss.validatedLedger.baseFeeXRP*1000000)+""
 
       api.getFee().then(function(e){
         console.log('Estimated fee= ', parseFloat(e)*1000*1000)
@@ -38,8 +51,9 @@ api.on('connected', function () {
           "TransactionType" : "Payment",
           "Account" : myAddress,
           "Fee" : _fee,
-          "Destination" : "rMofb3qnbYWrNqdy96iMwNEeSaFo8Dg5QY",
-          "Amount" : (10*1000*1000)+"",
+          "Destination" : destAddress,
+          //"Amount" : (10*1000000)+"",
+          "Amount":req.body.Amount,
           "LastLedgerSequence" : ss.validatedLedger.ledgerVersion+4,
           "Sequence" : info.sequence
           // "Amount" : {
@@ -87,8 +101,10 @@ api.on('connected', function () {
 
                         clearInterval(checkTransactionStatus)
                         console.log('<<<<<< getTransaction results: >>>>')
+
                         // console.dir(d, { depth: null })
                         console.dir(d.outcome, { depth: null })
+                        res.send(d.outcome);
 
                      }).catch(function(e){
                       console.log('Error getting Transaction: ', e)
@@ -102,7 +118,7 @@ api.on('connected', function () {
 
                })
 
-          }, 5000);
+          }, 1000);
 
        }).catch(console.error);
 
@@ -120,6 +136,8 @@ api.connect()
 setTimeout(function(){
   api.disconnect()
 }, 100*1000)
+
+
 });
 var port = process.env.PORT || 3000;
 
