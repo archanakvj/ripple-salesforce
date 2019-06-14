@@ -1,3 +1,4 @@
+//new copy
 const express = require('express');
 
 const app = new express.Router();
@@ -92,21 +93,16 @@ api.on('connected', function () {
                         minLedgerVersion: ss.validatedLedger.ledgerVersion,
                         maxLedgerVersion: ledgerVersion
                      }).then(function(d){
-
-                        clearInterval(checkTransactionStatus)
+                       clearInterval(checkTransactionStatus)
+                        console.log('checkTransactionStatus');
                         console.log('<<<<<< getTransaction results: >>>>')
 
                         // console.dir(d, { depth: null })
                         console.dir(d.outcome, { depth: null })
-                        console.log('before before disconnect');
-                        res.send(transactionSigned.id);
-                       /* res.send(d.outcome).then(function (){
-                         console.log('before disconnect');
+                        console.log(' before disconnect');
                         api.disconnect();
-                        console.log('after disconnect');});
-                       */
+                        res.send(transactionSigned.id);
                        
-
                      }).catch(function(e){
                       console.log('Error getting Transaction: ', e)
                      })
@@ -114,18 +110,15 @@ api.on('connected', function () {
                 }
                 if(ledgerVersion > ss.validatedLedger.ledgerVersion+4){
                   console.log('>>>>>> EXPIRED <<<<<<<')
-                  clearInterval(checkTransactionStatus)
+                  clearInterval(checkTransactionStatus);
+                  // api.disconnect();
                 }
 
                })
 
-          }, 1000);
+          }, 5000);
 
-       }).then(function (){
-                         console.log('before disconnect1');
-                        //api.disconnect();
-                        console.log('after disconnect1');
-                      }).catch(console.error);;
+       }).catch(console.error);;
 
     }).catch(console.error)
 
